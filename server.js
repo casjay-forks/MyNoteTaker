@@ -21,11 +21,6 @@ app.get("/api/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/db/db.json"));
 });
 
-app.get("/api/notes/:id", (req, res) => {
-    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf-8"));
-    res.json(savedNotes[String(req.params.id)]);
-});
-
 app.post("/api/notes", (req, res) => {
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf-8"));
     let note = req.body;
@@ -40,16 +35,10 @@ app.post("/api/notes", (req, res) => {
 app.delete("/api/notes/:id", (req, res) => {
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf-8"));
     let noteID = req.params.id;
-    let newID = 0;
     savedNotes = savedNotes.filter(selectedNote => {
         return selectedNote.id !== noteID;
     });
-
-    for (selectedNote of savedNotes) {
-        selectedNote.id = newID.toString();
-        newID++;
-    };
-
+    
     fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
     res.json(savedNotes);
 });
