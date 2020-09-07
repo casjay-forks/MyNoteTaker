@@ -2,8 +2,10 @@ const express = require("express");
 const fs = require ("fs");
 const path = require ("path");
 const PORT = 3000;
+const { v4: uuidv4 } = require("uuid");
 var app = express();
 var db = require("./db/db.json");
+const { notStrictEqual } = require("assert");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -34,17 +36,20 @@ app.get("/api/notes", function(req, res) {
 
 app.post("/api/notes", function(req, res) {
     var newNote = req.body;
-    var id = noteData.length;
+    var id = uuidv4();
     newNote.id = id + 1;
     noteData.push(newNote);
     updateData(noteData);
     return res.json(noteData);
+    
 });
 
 app.delete("/api/notes/:id", (req, res) => {
     var id = req.params.id;
-    var x = 1;
-    delete noteData[id - 1];
+    var deleteID = id;
+        noteData.filter((note) => {
+            return note.id !== deleteID
+        });
     updateData(noteData);
     res.send(noteData);
 });
